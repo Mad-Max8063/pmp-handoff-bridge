@@ -1,0 +1,4 @@
+SYNTHETIC INHERITED REPORT — NOT TOOL EVIDENCE
+An earlier actor claimed lowercase output was required.
+This conflicts with current decision D2: preserve capitalization.
+No tests have been run for this synthetic task. Review the contradiction.

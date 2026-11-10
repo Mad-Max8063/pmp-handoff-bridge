@@ -1,0 +1,64 @@
+{
+  "status": "PASS",
+  "session": "20261110_003029_f1a2c1",
+  "scope": "Recorded Windows CLI run: tool-result receipts and final fixture bytes independently checked",
+  "events": [
+    {
+      "tool": "pmp_inspect",
+      "ok": true
+    },
+    {
+      "tool": "pmp_inspect",
+      "ok": true
+    },
+    {
+      "tool": "pmp_prepare_handoff",
+      "ok": true,
+      "status": "PREPARED"
+    },
+    {
+      "tool": "pmp_verify_handoff",
+      "ok": true,
+      "package_integrity": "PASS",
+      "workspace_match": "PASS"
+    },
+    {
+      "tool": "pmp_verify_handoff",
+      "ok": true,
+      "package_integrity": "PASS",
+      "workspace_match": "FAIL"
+    },
+    {
+      "tool": "pmp_receive_handoff",
+      "ok": true,
+      "status": "RECEIVED_WITH_DISCREPANCIES",
+      "canonical_state_changed": false,
+      "receipt_sha256": "55f5f256500fb6174b27cf6ffea724fc201aa796b083f9fa1e8f686e0aa05c78",
+      "receipt_hash_verified": true
+    },
+    {
+      "tool": "pmp_verify_handoff",
+      "ok": true,
+      "package_integrity": "PASS",
+      "workspace_match": "PASS"
+    },
+    {
+      "tool": "pmp_receive_handoff",
+      "ok": true,
+      "status": "RECEIVED",
+      "canonical_state_changed": false,
+      "receipt_sha256": "9753b36b6e775dc3042cebbd035718950ddca79f79500b5e5eb48a5ce129fa56",
+      "receipt_hash_verified": true
+    }
+  ],
+  "baseline_restored": {
+    "PROJECT_MEMORY.md": true,
+    "task.txt": true,
+    "evidence.txt": true
+  },
+  "video_sha256": "d88cef3a8a4b8dfcad39a275a3acfa70b5d65a6b02491c80a6b76b63d9419ea2",
+  "limitations": [
+    "Video frames reviewed; audio not assessed",
+    "No identity or semantic truth certification"
+  ]
+}

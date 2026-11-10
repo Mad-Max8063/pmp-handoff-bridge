@@ -1,0 +1,13 @@
+name: pmp-handoff-bridge
+version: "0.1.0"
+description: Verify portable PMP handoffs, detect workspace drift, and record reception without overwriting canonical state.
+author: Max Devs Solutions
+provides_tools:
+  - pmp_inspect
+  - pmp_prepare_handoff
+  - pmp_verify_handoff
+  - pmp_receive_handoff
+
+requires_hermes: ">=0.21.6"
+requires_env:
+  - PMP_BRIDGE_WORKSPACE

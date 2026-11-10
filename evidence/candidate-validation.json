@@ -1,0 +1,16 @@
+{
+  "status": "PREPARED_NOT_PUBLISHED",
+  "offline_tests": {
+    "passed": 18,
+    "failed": 0
+  },
+  "native_doctor": "PASS: 4 tools, 0 hooks",
+  "native_validate": "PASS with unchanged vendored parser cautions at markdown_sections.py:32,47",
+  "native_validate_install_deps": "BLOCKED: isolated profile lacks independent pm-runtime; lazy installs disabled. Full pinned-checkout gate remains pending.",
+  "model_calls": 0,
+  "git": "No repository initialized; no commit or push",
+  "public_repo_proposal": "Mad-Max8063/pmp-handoff-bridge",
+  "catalog_pr": "DRAFT; no real commit SHA yet",
+  "video": "Approved v7, 83 seconds",
+  "form": "Copy prepared; live fields and deadline not independently confirmed"
+}
