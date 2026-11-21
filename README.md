@@ -1,12 +1,62 @@
 # PMP Handoff Bridge
 
-Experimental native Hermes plugin for **inspect → prepare → verify → receive**.
-It carries selected PMP state and evidence bytes across a handoff, detects drift,
-and records reception without replacing the receiving project's canonical state.
+**Give the next AI agent the context to continue a project — and the ability to check whether that context still matches the files.**
 
-This is executable validation and persistence, not a prompt wrapper. There is no
-model, network client, server, database, background task, or runtime dependency on
-the original PMP repository. It does not execute the task described in a handoff.
+[Hermes Marketplace](https://hermes-agent.nousresearch.com/marketplace/pmp-handoff-bridge) · [Watch the 83-second demo](https://x.com/MaxDevsLabs/status/2120122902318125209) · [Project Memory Protocol](https://github.com/Mad-Max8063/project-memory-protocol-public)
+
+[![Hermes Marketplace](https://img.shields.io/badge/Hermes-Marketplace%20%7C%20Community-16a34a)](https://hermes-agent.nousresearch.com/marketplace/pmp-handoff-bridge)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
+
+PMP Handoff Bridge is an experimental, open-source plugin for Hermes Agent, built around [Project Memory Protocol (PMP)](https://github.com/Mad-Max8063/project-memory-protocol-public). PMP records a project's current state, decisions, evidence, constraints and next action in a portable `PROJECT_MEMORY.md` file. The bridge packages that state with explicitly selected files, detects changes to those files, and saves a receipt when the handoff is received.
+
+## Why this exists
+
+Imagine an AI agent finishing a task and handing the project to another agent. A good handoff explains what happened and what to do next. But what if a file changes after that handoff is prepared? The receiving agent may have a perfectly intact package that no longer reflects the workspace.
+
+The bridge lets the receiving agent check both things separately: **is the package intact, and do the selected local files still match it?** It creates a persistent record of what was checked without replacing canonical project memory or automatically executing the next action.
+
+## How it works
+
+```mermaid
+flowchart TD
+    A["Project memory and selected files"] --> B["Inspect and prepare a handoff"]
+    B --> C["Portable JSON package + SHA-256"]
+    C --> D["Receiver verifies package and workspace"]
+    D --> E{"Package intact?"}
+    E -->|No| F["Reject package"]
+    E -->|Yes| G{"Selected files match?"}
+    G -->|Yes| H["RECEIVED"]
+    G -->|No| I["RECEIVED_WITH_DISCREPANCIES"]
+    H --> J["Save receipt for review or continuation"]
+    I --> J
+```
+
+The human operator controls which files are packaged and how the package is transferred. The four native Hermes tools implement the checks and persist the results locally. There is no bridge-operated model, server, database, network client or background task.
+
+### A concrete example
+
+The included demonstration uses a small, fictional task with three selected files: `PROJECT_MEMORY.md`, `task.txt` and `evidence.txt`.
+
+| Stage | Package integrity | Workspace match | Result |
+| --- | --- | --- | --- |
+| Prepare and verify | PASS | PASS | Selected files match the handoff |
+| Operator changes `task.txt` | PASS | FAIL | `RECEIVED_WITH_DISCREPANCIES` |
+| Operator restores the original bytes | PASS | PASS | `RECEIVED` |
+
+Both receipts record what was observed. The original project memory is preserved. The recorded demo exercises these operations through the native Hermes CLI using a resumed session, and the repository includes a model-free replay of the same workflow.
+
+## Install in Hermes
+
+Version 0.1.0 is listed in the **community / Tools** category of the [Hermes Marketplace](https://hermes-agent.nousresearch.com/marketplace/pmp-handoff-bridge), added on November 11, 2026 via [the merged catalog PR #153689](https://github.com/NousResearch/hermes-agent/pull/153689). It requires Hermes 0.21.6 or newer and lists Windows and Linux.
+
+```text
+hermes plugins install pmp-handoff-bridge
+hermes plugins enable pmp-handoff-bridge
+```
+
+Set `PMP_BRIDGE_WORKSPACE` to the absolute path of the project you authorize **before** starting the Hermes session that will use the tools, for example a disposable workspace created by the offline demo below. No plugin-specific API key is needed. Model usage is managed by Hermes through your own configured provider.
+
+The catalog pins the reviewed source at [`04f0471`](https://github.com/Mad-Max8063/pmp-handoff-bridge/tree/04f04711dfc10edbf9e77bb98dd390ab03bea60c). Catalog installation uses that exact revision; documentation on this repository's default branch may evolve separately.
 
 ## Requirements and local quick start
 
@@ -14,17 +64,23 @@ the original PMP repository. It does not execute the task described in a handoff
 - Hermes is optional for offline operation; native compatibility is a separate gate.
 - No Python packages need to be installed for the bridge or offline tests.
 
-From this directory in PowerShell:
+Clone the repository and run the checks from its root directory:
 
-```powershell
+```text
+git clone https://github.com/Mad-Max8063/pmp-handoff-bridge.git
+cd pmp-handoff-bridge
 python -B -m unittest discover -s tests -v
 python -B scripts/demo.py
 ```
+
+Use `python3` in place of `python` if that is your Python command on Linux or WSL2.
 
 The demo creates a new synthetic workspace under `.runtime/`, prepares a package,
 verifies it, modifies one selected file, records the discrepancy, restores that
 synthetic file, and receives the valid package. It preserves canonical memory.
 It prints the run directory and receipt path. No agent/model is invoked.
+
+Expected output includes `status: PASS`, six completed tool operations and a receipt path. Open the printed run directory's `demo-report.json` to inspect the actual results and observed hashes. You can reproduce this check without a Hermes account or model subscription.
 
 ## Tools
 
@@ -134,24 +190,31 @@ PMP Evidence references remain inherited text; only selected bytes are checked.
 - The fixture's inherited report is explicitly synthetic. Actual tool evidence
   is produced by the check/demo runners, not asserted by the fixture.
 
-## Results, provenance and distribution
+## Evidence and review status
 
-See `evidence/RESULTS.md` for observed results and validation limits.
-`PROVENANCE.md` identifies the two unchanged MIT source modules and origin hashes.
-The 83-second demo follows prepare, verify, controlled drift, receipt, and restoration.
+| Check | Observed result |
+| --- | --- |
+| Offline core tests | 18 tests passed from a fresh public checkout |
+| Native Windows CLI | All four tools exercised; both receipt hashes independently checked and original fixture bytes restored |
+| Ubuntu/WSL2 | 18 tests and native plugin registration/validation passed; operator-reported live tool use with archived receipts |
+| Hermes local admission command | `hermes plugins validate --install-deps --json` passed at the catalog-pinned commit; two scanner cautions on the unchanged vendored Markdown parser were disclosed |
+| Hermes catalog | Community entry merged through [PR #153689](https://github.com/NousResearch/hermes-agent/pull/153689) |
 
-No paid API, service, global install, Git commit, push, PR, marketplace submission
-or acceptance is part of this delivery. Local validation is not catalog approval.
-Catalog publication later requires a reviewed public commit and human admission:
-https://hermes-agent.nousresearch.com/docs/user-guide/features/plugin-catalog
+[Watch the actual CLI recording in the demo](https://x.com/MaxDevsLabs/status/2120122902318125209) or inspect the [sanitized Windows results](evidence/windows-cli.json). [Results and limits](evidence/RESULTS.md) and [candidate validation](evidence/candidate-validation.json) preserve earlier development observations, including the initial dependency-preparation blocker that was resolved before catalog submission. [Provenance](PROVENANCE.md) identifies the two unchanged MIT source modules and their origin hashes. See the [original catalog submission](https://github.com/NousResearch/hermes-agent/pull/152592) for disclosures and the full local validation summary.
+
+This is a bounded synthetic experiment. The program checks selected bytes and records reception; it does not certify model identity, claim truth, semantic consistency or session freshness. Marketplace inclusion is a review of the pinned revision, and is not an independent security audit or proof of general reliability.
 
 Delete only a reviewed disposable `.runtime/<run>` directory to clean local runs.
 Keep any evidence you need first. The plugin creates no cloud resources to clean.
 
-## Public candidate evidence and disclosures
-
-This candidate includes the 18 core tests and synthetic fixture. Native registration and recorded runs were verified on the development hosts; catalog CI on the eventual pinned public commit is still pending. The approved 83-second demo uses cropped Windows CLI footage and distinct historical Ubuntu/WSL2 evidence.
+## Disclosures
 
 The plugin reads explicitly selected files inside the operator-authorized workspace, which is outside its own installation directory, and writes append-only packages/receipts under that workspace. It stores selected file bytes in packages: choose files that are safe to share. It does not read credential stores, send telemetry, contact network services, execute shell commands, self-update, patch Hermes, or start background tasks. Host plugin execution is not an OS sandbox. Receipts are unsigned local observations. Hashes do not certify agent identity, semantic truth, session freshness, or authorization.
 
-The reviewed MIT parser and validator provenance is in PROVENANCE.md. Local developer runtime diagnostics and model runners are excluded from this candidate. PMP Core remains optional and unchanged.
+The reviewed MIT parser and validator provenance is in PROVENANCE.md. Local developer runtime diagnostics and model runners are excluded from this repository. PMP Core remains optional and unchanged.
+
+## Contribute
+
+Feedback, reproducible test reports and suggestions for improved cross-agent handoffs are welcome via [GitHub issues](https://github.com/Mad-Max8063/pmp-handoff-bridge/issues). Start with the offline replay, and describe the environment and observed result if you try the plugin in Hermes.
+
+[MIT license](LICENSE) · Made by [Max Devs Labs](https://github.com/Mad-Max8063).
