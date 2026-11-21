@@ -1,5 +1,7 @@
 # PMP Handoff Bridge
 
+![PMP Handoff Bridge: portable project state and verifiable handoffs between AI agents](docs/pmp-handoff-bridge-cover.jpg)
+
 **Give the next AI agent the context to continue a project — and the ability to check whether that context still matches the files.**
 
 [Hermes Marketplace](https://hermes-agent.nousresearch.com/marketplace/pmp-handoff-bridge) · [Watch the 83-second demo](https://x.com/MaxDevsLabs/status/2120122902318125209) · [Project Memory Protocol](https://github.com/Mad-Max8063/project-memory-protocol-public)
@@ -44,6 +46,12 @@ The included demonstration uses a small, fictional task with three selected file
 | Operator restores the original bytes | PASS | PASS | `RECEIVED` |
 
 Both receipts record what was observed. The original project memory is preserved. The recorded demo exercises these operations through the native Hermes CLI using a resumed session, and the repository includes a model-free replay of the same workflow.
+
+### See it in action
+
+[![Animated demonstration of Hermes detecting workspace drift: package integrity PASS, workspace match FAIL, discrepancy receipt saved](docs/pmp-handoff-demo.gif)](https://x.com/MaxDevsLabs/status/2120122902318125209)
+
+*15-second excerpt of the recorded Windows CLI demonstration, accelerated and cropped for readability. [Watch the complete 83-second demo with narration and English captions](https://x.com/MaxDevsLabs/status/2120122902318125209).*
 
 ## Install in Hermes
 
