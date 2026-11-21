@@ -53,6 +53,10 @@ Both receipts record what was observed. The original project memory is preserved
 
 *15-second excerpt of the recorded Windows CLI demonstration, accelerated and cropped for readability. [Watch the complete 83-second demo with narration and English captions](https://x.com/MaxDevsLabs/status/2120122902318125209).*
 
+**Full demo — 83 seconds, English narration and captions:**
+
+https://github.com/user-attachments/assets/822f66d4-1a7d-4ae9-ab98-3d15f883b394
+
 ## Install in Hermes
 
 Version 0.1.0 is listed in the **community / Tools** category of the [Hermes Marketplace](https://hermes-agent.nousresearch.com/marketplace/pmp-handoff-bridge), added on November 11, 2026 via [the merged catalog PR #153689](https://github.com/NousResearch/hermes-agent/pull/153689). It requires Hermes 0.21.6 or newer and lists Windows and Linux.
